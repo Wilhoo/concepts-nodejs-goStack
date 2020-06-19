@@ -9,7 +9,6 @@ app.use(express.json());
 app.use(cors());
 
 const repositories = [];
-const like = [likes = 1];
 
 app.get("/repositories", (request, response) => {  
   return response.json(repositories);
@@ -18,9 +17,7 @@ app.get("/repositories", (request, response) => {
 app.post("/repositories", (request, response) => {
   const { title, url, techs } = request.body;
   
-  var likes = 0;
-
-  const repository = { id: uuid(), title, url, techs, likes}
+  const repository = { id: uuid(), title, url, techs, likes:0}
 
   repositories.push(repository);
 
@@ -37,14 +34,12 @@ app.put("/repositories/:id", (request, response) => {
     return response.status(400).json({error: 'Repository not found'})
   }
 
-  var likes = 0;
-
   const repository = {
     id,
     title,
     url,
     techs,
-    likes,
+    likes: 0,
   };
 
   repositories[repoIndex] = repository;
@@ -69,22 +64,15 @@ app.delete("/repositories/:id", (request, response) => {
 app.post("/repositories/:id/like", (request, response) => {
   const {id} = request.params;
 
-  const repoIndex = repositories.findIndex(repo => repo.id === id)
+  const repo = repositories.find(repo => repo.id === id)
 
-  if (repoIndex < 0) {
+  if (repo < 0) {
     return response.status(400).json({error: 'Repository not found'})
   }
 
-  var likeIncrement = {
-    likes,
-  }
+  repo.likes += 1;
 
-  var increment = like.map(item => item.likes++)
-  like.push(likeIncrement);
-
-  //console.log(like[likes]);
-
-  return response.json(like[likes]);
+  return response.json(repo);
 });
 
 module.exports = app;
